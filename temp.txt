@@ -1,0 +1,22 @@
+lib/
+├── package.json          ← Monorepo runner (starts both servers)
+├── package-lock.json
+├── backend/
+│   ├── server.js
+│   ├── db.js             ← MongoDB connection
+│   ├── seed.js
+│   ├── .env
+│   ├── models/           ← Book, User, Issue, Request, Feedback, Settings
+│   └── routes/           ← auth, books, issues, requests, stats, users, etc.
+└── react/
+    ├── vite.config.js
+    ├── index.html
+    └── src/
+        ├── App.jsx
+        ├── main.jsx
+        ├── index.css
+        ├── assets/       ← branch images, hero.png
+        ├── components/   ← PrivateRoute
+        ├── context/      ← ToastContext
+        ├── pages/        ← AdminDashboard, LibrarianDashboard, etc.
+        └── utils/        ← api.js, auth.js
