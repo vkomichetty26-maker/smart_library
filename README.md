@@ -1,6 +1,6 @@
 # 📚 SmartLib - Library Management System
 
-A full-stack library management system built with React, Node.js, Express, and MongoDB.
+A full-stack library management system built with React, Node.js, Express, and MongoDB Atlas.
 
 ---
 
@@ -9,48 +9,57 @@ A full-stack library management system built with React, Node.js, Express, and M
 Before running this project, make sure you have the following installed:
 
 1. **Node.js** (v18 or higher) → https://nodejs.org/
-2. **MongoDB Community Server** → https://www.mongodb.com/try/download/community
-   - After installing, make sure **MongoDB is running** on your machine.
-   - On Windows: Search for "Services" → Find "MongoDB" → Click Start
-   - Or run in terminal: `net start MongoDB`
+2. **MongoDB Atlas account** (free) → https://cloud.mongodb.com
 
 ---
 
 ## 🚀 Setup & Run (Step by Step)
 
-Open a terminal (PowerShell or Command Prompt) in the project folder and run these commands **in order**:
-
-### Step 1 — Install Root Dependencies
+### Step 1 — Clone the Repository
 ```bash
-npm install
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+cd YOUR_REPO_NAME
 ```
 
-### Step 2 — Install Backend Dependencies
+### Step 2 — Install All Dependencies
 ```bash
-cd backend
 npm install
-cd ..
+cd backend && npm install && cd ..
+cd react && npm install && cd ..
 ```
 
-### Step 3 — Install Frontend Dependencies
+### Step 3 — Configure Environment Variables
+
+Create a `.env` file inside the `backend/` folder:
 ```bash
-cd react
-npm install
-cd ..
+copy backend\.env.example backend\.env
 ```
+
+Then open `backend/.env` and fill in your MongoDB Atlas connection string:
+```env
+PORT=5000
+MONGODB_URI=mongodb://YOUR_USER:YOUR_PASSWORD@ac-xxxxx.mongodb.net:27017,...?ssl=true&replicaSet=...&authSource=admin
+JWT_SECRET=supersecretjwtkey_smartlib
+ALLOW_IN_MEMORY_FALLBACK=false
+```
+
+> See `.env.example` for the format. Get your connection string from MongoDB Atlas → Connect → Drivers.
 
 ### Step 4 — Seed the Database (First Time Only)
-This creates initial admin/librarian/student accounts:
 ```bash
-npm run seed
+cd backend
+node seed.js
+cd ..
 ```
+
+This creates all demo users, books, and settings in your Atlas database.
 
 ### Step 5 — Start the Application
 ```bash
-npm start
+npm run dev
 ```
 
-This will start both the backend server and the React frontend simultaneously.
+This starts both the backend (port 5000) and React frontend (port 5173) together.
 
 ---
 
@@ -65,26 +74,30 @@ This will start both the backend server and the React frontend simultaneously.
 
 ## 🔑 Default Login Credentials (after seeding)
 
-| Role      | Email                   | Password   |
-|-----------|-------------------------|------------|
-| Admin     | admin@smartlib.com      | admin123   |
-| Librarian | librarian@smartlib.com  | lib123     |
-| Faculty   | faculty@smartlib.com    | fac123     |
-| Student   | student@smartlib.com    | stu123     |
+| Role      | Username    | Password   |
+|-----------|-------------|------------|
+| Admin     | `admin`     | `admin123` |
+| Librarian | `librarian` | `lib123`   |
+| Faculty   | `faculty1`  | `fac123`   |
+| Student   | `student1`  | `std123`   |
 
-> **Note:** Run `npm run seed` only once. Running it again may create duplicates.
+> **Note:** Run `node seed.js` only once. Running it again will reset and re-create all data.
 
 ---
 
 ## 🛠️ Troubleshooting
 
-### ❌ "Server Error" or "Cannot connect to MongoDB"
-→ MongoDB is not running. Start it:
-- **Windows:** `net start MongoDB` in terminal (as Administrator)
-- **Mac/Linux:** `sudo systemctl start mongod`
+### ❌ "Could not connect to any servers in your MongoDB Atlas cluster"
+→ Your IP is not whitelisted. Go to Atlas → Network Access → Add IP Address → Allow Access from Anywhere.
+
+### ❌ "querySrv ECONNREFUSED"
+→ Your ISP blocks SRV DNS lookups. Use the **standard connection string** (not `mongodb+srv://`) from Atlas → Connect → Drivers → toggle off "SRV Connection String".
+
+### ❌ "Authentication failed"
+→ Wrong password in your `.env`. Re-check it against Atlas → Database Access.
 
 ### ❌ "Cannot find module" errors
-→ You skipped the `npm install` steps. Run Steps 1–3 above again.
+→ You skipped `npm install`. Run Step 2 again.
 
 ### ❌ Port already in use
 → Another app is using port 5000 or 5173. Close other dev servers or change the port in `backend/.env`.
@@ -94,14 +107,25 @@ This will start both the backend server and the React frontend simultaneously.
 ## 📁 Project Structure
 
 ```
-lib/
-├── backend/          # Node.js + Express API server
-│   ├── models/       # MongoDB/Mongoose models
-│   ├── routes/       # API route handlers
-│   ├── server.js     # Entry point
-│   ├── db.js         # Database connection
-│   └── .env          # Environment config (PORT, DB URL, JWT secret)
-├── react/            # React + Vite frontend
-│   └── src/          # React source files
-└── package.json      # Root scripts (runs both together)
+smartlib/
+├── backend/              # Node.js + Express API server
+│   ├── models/           # Mongoose models (User, Book, Issue, etc.)
+│   ├── routes/           # API route handlers
+│   ├── server.js         # Entry point
+│   ├── db.js             # Database connection logic
+│   ├── mongoConfig.js    # MongoDB URI helpers
+│   ├── seed.js           # Database seeder script
+│   ├── .env              # ⚠️ NOT committed — create from .env.example
+│   └── .env.example      # Template for environment variables
+├── react/                # React + Vite frontend
+│   └── src/              # React source files
+└── package.json          # Root scripts (runs both together)
 ```
+
+---
+
+## 🔒 Security Notes
+
+- The `.env` file is **gitignored** and will never be pushed to GitHub.
+- Always use environment variables for secrets — never hardcode credentials.
+- For production, restrict Atlas Network Access to your server's specific IP.
