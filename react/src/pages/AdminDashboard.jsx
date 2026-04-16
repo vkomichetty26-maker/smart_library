@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clearSession, getSession } from '../utils/auth';
-import { usersAPI, booksAPI, issuesAPI, statsAPI, settingsAPI, notificationsAPI } from '../utils/api';
+import { usersAPI, booksAPI, issuesAPI, statsAPI, settingsAPI, notificationsAPI, backupAPI } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 
 const categories = ['Programming','Computer Science','AI / Machine Learning','Databases','Mathematics','Systems','Networking','Algorithms','Software Engineering','Physics','Chemistry','Other'];
@@ -503,7 +503,29 @@ export default function AdminDashboard() {
                   <div style={{fontSize:'3rem',color:'#d97706',marginBottom:'1rem'}}><i className="fas fa-cloud-upload-alt"></i></div>
                   <div className="fw-700 mb-1">Restore Backup</div>
                   <div className="text-muted mb-2" style={{fontSize:'.88rem'}}>Restore from a JSON backup file</div>
-                  <button className="btn btn-warn" onClick={() => toast('Restore: Upload JSON to the backend /api/restore endpoint','info')}><i className="fas fa-upload"></i> Choose Backup File</button>
+                  <input type="file" id="restoreFile" style={{display:'none'}} accept=".json" onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    try {
+                      const reader = new FileReader();
+                      reader.onload = async (ev) => {
+                        try {
+                          const data = JSON.parse(ev.target.result);
+                          await backupAPI.restore(data);
+                          toast('Backup restored successfully!', 'ok');
+                          loadAll();
+                        } catch (err) {
+                          toast('Invalid JSON or restore failed', 'err');
+                        }
+                        e.target.value = '';
+                      };
+                      reader.readAsText(file);
+                    } catch (e) {
+                      toast('Error reading file', 'err');
+                      e.target.value = '';
+                    }
+                  }} />
+                  <button className="btn btn-warn" onClick={() => document.getElementById('restoreFile').click()}><i className="fas fa-upload"></i> Choose Backup File</button>
                 </div></div>
               </div>
             </div>

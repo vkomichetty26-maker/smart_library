@@ -6,7 +6,8 @@ const connectDB = require('./db');
 const app = express();
 
 app.use(cors({ origin: '*' }));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
@@ -17,6 +18,7 @@ app.use('/api/feedback', require('./routes/feedback'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/backup', require('./routes/backup'));
 
 app.get('/', (req, res) => res.json({ status: 'SmartLib API Running', version: '2.0.0' }));
 

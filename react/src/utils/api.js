@@ -54,3 +54,7 @@ export const notificationsAPI = {
   markRead: (notificationIds) => api.patch('/notifications/mark-read', { notificationIds }),
   create: (data) => api.post('/notifications', data),
 };
+
+export const backupAPI = {
+  restore: (data) => api.post('/backup/restore', data),
+};
