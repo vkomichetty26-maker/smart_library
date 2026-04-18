@@ -1,5 +1,5 @@
 // API base URL
-export const API_URL = 'http://localhost:5000/api';
+export const API_URL = 'https://smart-library-backend-yibq.onrender.com/api';
 
 // Session helpers (mirrors DB.setSession / getSession / clearSession)
 export const setSession = (user) => {
