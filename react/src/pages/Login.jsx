@@ -130,12 +130,6 @@ export default function Login() {
     setLoading(false);
   }
 
-  function quickLogin(u, p, r) {
-    handleRoleChange(r);
-    setUsername(u); setPassword(p);
-    setTimeout(() => doLogin(u, p, r), 50);
-  }
-
   const labels = ['Branch','Group','Year','Sign In'];
 
   return (
@@ -293,16 +287,6 @@ export default function Login() {
               <button className="btn-login" onClick={() => doLogin()} disabled={loading}>
                 {loading ? <><i className="fas fa-spinner fa-spin"></i> Signing In…</> : <><i className="fas fa-sign-in-alt"></i> Sign In to Portal</>}
               </button>
-              {!isStudent && (
-                <div className="demo-box">
-                  <h4><i className="fas fa-key"></i> Quick Demo Access</h4>
-                  <div className="cred-grid">
-                    <div className="cred" onClick={() => quickLogin('admin','admin123','admin')}><div className="cred-role" style={{color:'#60a5fa'}}><i className="fas fa-shield-alt"></i> Admin</div><div className="cred-val">admin / admin123</div></div>
-                    <div className="cred" onClick={() => quickLogin('librarian','lib123','librarian')}><div className="cred-role" style={{color:'#fbbf24'}}><i className="fas fa-book-reader"></i> Librarian</div><div className="cred-val">librarian / lib123</div></div>
-                    <div className="cred" onClick={() => quickLogin('faculty1','fac123','faculty')}><div className="cred-role" style={{color:'#34d399'}}><i className="fas fa-chalkboard-teacher"></i> Faculty</div><div className="cred-val">faculty1 / fac123</div></div>
-                  </div>
-                </div>
-              )}
             </>
           )}
 
