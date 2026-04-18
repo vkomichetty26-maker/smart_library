@@ -47,6 +47,20 @@ export default function LibrarianDashboard() {
   const [dbNotifications, setDbNotifications] = useState([]);
   const [showSuggest, setShowSuggest] = useState(false);
   const [suggestBook, setSuggestBook] = useState({ title: '', author: '', note: '' });
+  const [showChangePwd, setShowChangePwd] = useState(false);
+  const [newPwd, setNewPwd] = useState('');
+
+  async function handleChangePassword() {
+    if (!newPwd) { toast('Please enter a new password', 'err'); return; }
+    try {
+      await usersAPI.update(session.id, { password: newPwd });
+      toast('Password changed successfully!', 'ok');
+      setShowChangePwd(false);
+      setNewPwd('');
+    } catch(e) {
+      toast('Failed to change password', 'err');
+    }
+  }
 
   // Issue book
   const [issueUser, setIssueUser] = useState('');
@@ -136,6 +150,7 @@ export default function LibrarianDashboard() {
     catalog:   ['Book Catalog',    'Browse all books'],
     members:   ['Members',         'View member details'],
     feedback:  ['Member Feedback', 'View submitted feedback'],
+    profile:   ['My Profile',      'Your account settings'],
   };
   const [ptitle, psub] = pageMeta[section] || [section, ''];
 
@@ -254,6 +269,7 @@ export default function LibrarianDashboard() {
           <button className={`nav-item ${section==='catalog'?'active':''}`} onClick={() => go('catalog')}><i className="fas fa-book"></i>Book Catalog</button>
           <button className={`nav-item ${section==='members'?'active':''}`} onClick={() => go('members')}><i className="fas fa-users"></i>Members</button>
           <button className={`nav-item ${section==='feedback'?'active':''}`} onClick={() => go('feedback')}><i className="fas fa-star"></i>Feedback</button>
+          <button className={`nav-item ${section==='profile'?'active':''}`} onClick={() => go('profile')}><i className="fas fa-user-circle"></i>My Profile</button>
         </nav>
         <div className="sidebar-footer">
           <div className="user-card">
@@ -672,6 +688,32 @@ export default function LibrarianDashboard() {
             </div>
           )}
 
+          {/* ══ PROFILE ══ */}
+          {section === 'profile' && (
+            <div>
+              <div className="section-hd"><h2><i className="fas fa-user-circle" style={{marginRight:'8px'}}></i>My Profile</h2></div>
+              <div className="card">
+                <div className="card-body">
+                  <div style={{display:'flex',alignItems:'center',gap:'1.5rem',marginBottom:'2rem',flexWrap:'wrap'}}>
+                    <div style={{width:'88px',height:'88px',borderRadius:'50%',background:'linear-gradient(135deg,#1e3a8a,#3b82f6)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'2.2rem',fontWeight:800,color:'#fff'}}>{(session?.name||'L')[0]}</div>
+                    <div><h2 style={{fontSize:'1.5rem'}}>{session?.name||'Librarian'}</h2><p className="text-muted" style={{marginTop:'4px'}}>{session?.email||'No email set'}</p></div>
+                  </div>
+                  <div className="form-grid">
+                    {[['Employee ID', session?.employeeId||session?.username],['Department', session?.department||'Library'],['Phone', session?.phone||'—'],['Role', 'Librarian']].map(([label, val]) => (
+                      <div key={label} style={{background:'var(--bg)',borderRadius:'12px',padding:'1rem'}}>
+                        <div style={{fontSize:'.75rem',color:'var(--muted)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.04em'}}>{label}</div>
+                        <div className="fw-700 mt-1">{val}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{marginTop:'1.5rem'}}>
+                    <button className="btn btn-primary" onClick={() => setShowChangePwd(true)}><i className="fas fa-key"></i> Change Password</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
 
@@ -685,6 +727,17 @@ export default function LibrarianDashboard() {
         <div className="modal-footer" style={{marginTop:'1.5rem',display:'flex',gap:'10px',justifyContent:'flex-end'}}>
           <button className="btn btn-outline" onClick={() => setShowSuggest(false)}>Cancel</button>
           <button className="btn btn-primary" onClick={handleSuggestBook}><i className="fas fa-paper-plane"></i> Send Suggestion</button>
+        </div>
+      </Modal>
+
+      <Modal title={<><i className="fas fa-key" style={{color:'#d97706'}}></i> Change Password</>} open={showChangePwd} onClose={() => setShowChangePwd(false)}>
+        <div className="form-group" style={{marginTop:'1rem'}}>
+          <label>New Password</label>
+          <input className="inp" type="password" value={newPwd} onChange={e => setNewPwd(e.target.value)} placeholder="Enter new password" />
+        </div>
+        <div className="modal-footer" style={{marginTop:'1.5rem',display:'flex',gap:'10px',justifyContent:'flex-end'}}>
+          <button className="btn btn-outline" onClick={() => setShowChangePwd(false)}>Cancel</button>
+          <button className="btn btn-primary" onClick={handleChangePassword}><i className="fas fa-save"></i> Save</button>
         </div>
       </Modal>
 

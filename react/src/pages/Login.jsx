@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { authAPI } from '../utils/api';
+import { authAPI, notificationsAPI } from '../utils/api';
 import { setSession } from '../utils/auth';
 import { useToast } from '../context/ToastContext';
 
@@ -82,6 +82,18 @@ function ProgressBar({ step, total, labels }) {
   );
 }
 
+function Modal({ title, open, onClose, children }) {
+  if (!open) return null;
+  return (
+    <div className="modal-overlay open" style={{zIndex: 9999}} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-box" style={{maxWidth:'400px', background:'#0f172a', border:'1px solid rgba(255,255,255,0.1)', color:'#fff'}}>
+        <div className="modal-title" style={{marginBottom:'1rem', color:'#fff'}}>{title}</div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const toast = useToast();
@@ -97,6 +109,29 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [branchWarn, setBranchWarn] = useState(false);
+  const [showForgotBox, setShowForgotBox] = useState(false);
+  const [forgotType, setForgotType] = useState('password');
+  const [forgotInput, setForgotInput] = useState('');
+  const [forgotSending, setForgotSending] = useState(false);
+
+  async function handleForgotSubmit() {
+    if (!forgotInput.trim()) { toast('Please enter the required information', 'err'); return; }
+    setForgotSending(true);
+    try {
+      await notificationsAPI.create({
+        role: 'admin',
+        title: forgotType === 'password' ? 'Password Reset Request' : 'Username Retrieval Request',
+        text: `A user is requesting a ${forgotType} assistance. Provided info: ${forgotInput}`,
+        icon: 'fa-solid fa-life-ring text-warn'
+      });
+      toast('Request sent to admin!', 'ok');
+      setShowForgotBox(false);
+      setForgotInput('');
+    } catch (e) {
+      toast('Error sending request.', 'err');
+    }
+    setForgotSending(false);
+  }
 
   const isStudent = role === 'student';
 
@@ -283,6 +318,12 @@ export default function Login() {
                   <button className="eye-btn" onClick={() => setShowPwd(!showPwd)} type="button"><i className={`fas ${showPwd?'fa-eye-slash':'fa-eye'}`}></i></button>
                 </div>
               </div>
+              {role !== 'admin' && (
+                <div style={{ display:'flex', justifyContent:'space-between', marginTop:'.5rem', marginBottom:'1.2rem', fontSize:'.85rem' }}>
+                  <span style={{color:'rgba(255,255,255,.5)', cursor:'pointer', transition:'.2s'}} onClick={()=>{setForgotType('username');setShowForgotBox(true);}} onMouseOver={e=>e.target.style.color='#f59e0b'} onMouseOut={e=>e.target.style.color='rgba(255,255,255,.5)'}>Forgot Username?</span>
+                  <span style={{color:'rgba(255,255,255,.5)', cursor:'pointer', transition:'.2s'}} onClick={()=>{setForgotType('password');setShowForgotBox(true);}} onMouseOver={e=>e.target.style.color='#f59e0b'} onMouseOut={e=>e.target.style.color='rgba(255,255,255,.5)'}>Forgot Password?</span>
+                </div>
+              )}
               {isStudent && <button className="btn-back-step" onClick={() => setStep(3)} style={{marginBottom:'.75rem'}}><i className="fas fa-arrow-left"></i> Back to Year</button>}
               <button className="btn-login" onClick={() => doLogin()} disabled={loading}>
                 {loading ? <><i className="fas fa-spinner fa-spin"></i> Signing In…</> : <><i className="fas fa-sign-in-alt"></i> Sign In to Portal</>}
@@ -295,6 +336,27 @@ export default function Login() {
           </Link>
         </div>
       </div>
+
+      <Modal title={<><i className={`fas ${forgotType === 'password' ? 'fa-lock' : 'fa-user'}`} style={{color:'#f59e0b', marginRight:'8px'}}></i> Forgot {forgotType === 'password' ? 'Password' : 'Username'}</>} open={showForgotBox} onClose={() => setShowForgotBox(false)}>
+        <p style={{fontSize:'.85rem', color:'rgba(255,255,255,.7)', marginBottom:'1rem'}}>
+          {forgotType === 'password' 
+            ? 'Enter your username or email and we will notify the admin to reset your password.'
+            : 'Enter your email or phone number and we will notify the admin to retrieve your username.'}
+        </p>
+        <div className="login-field">
+          <label style={{color:'#fff'}}>{forgotType === 'password' ? 'Username / Email' : 'Email / Phone'}</label>
+          <div className="inp-wrap" style={{background:'rgba(255,255,255,0.05)'}}>
+            <input className="login-inp" style={{paddingLeft:'1rem'}} type="text" placeholder={`Enter your details`} value={forgotInput} onChange={e => setForgotInput(e.target.value)} />
+          </div>
+        </div>
+        <div style={{display:'flex', gap:'10px', justifyContent:'flex-end', marginTop:'1.5rem'}}>
+          <button style={{margin:0, padding:'.6rem 1.2rem', background:'rgba(255,255,255,.1)', color:'#fff', cursor:'pointer', border:'none', borderRadius:'12px', fontWeight:600}} onClick={() => setShowForgotBox(false)}>Cancel</button>
+          <button className="btn-login" style={{margin:0, padding:'.6rem 1.2rem', width:'auto'}} onClick={handleForgotSubmit} disabled={forgotSending}>
+            {forgotSending ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-paper-plane"></i>} Send Request
+          </button>
+        </div>
+      </Modal>
+
     </>
   );
 }

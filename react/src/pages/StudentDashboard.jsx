@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clearSession, getSession } from '../utils/auth';
-import { booksAPI, issuesAPI, requestsAPI, feedbackAPI, settingsAPI, notificationsAPI } from '../utils/api';
+import { booksAPI, issuesAPI, requestsAPI, feedbackAPI, settingsAPI, notificationsAPI, usersAPI } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 
 function Pill({ text, type }) { return <span className={`pill pill-${type}`}>{text}</span>; }
+
+function Modal({ title, open, onClose, children }) {
+  if (!open) return null;
+  return (
+    <div className="modal-overlay open" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-box" style={{maxWidth:'400px'}}>
+        <div className="modal-title" style={{marginBottom:'1rem'}}>{title}</div>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -27,6 +39,20 @@ export default function StudentDashboard() {
   const [fbMsg, setFbMsg] = useState('');
   const [myFeedback, setMyFeedback] = useState([]);
   const [finePerDay, setFinePerDay] = useState(5);
+  const [showChangePwd, setShowChangePwd] = useState(false);
+  const [newPwd, setNewPwd] = useState('');
+
+  async function handleChangePassword() {
+    if (!newPwd) { toast('Please enter a new password', 'err'); return; }
+    try {
+      await usersAPI.update(me.id, { password: newPwd });
+      toast('Password changed successfully!', 'ok');
+      setShowChangePwd(false);
+      setNewPwd('');
+    } catch(e) {
+      toast('Failed to change password', 'err');
+    }
+  }
 
   const branchCats  = me?.branchCats || [];
   const branchCode  = me?.branch || '';
@@ -465,6 +491,9 @@ export default function StudentDashboard() {
                       </div>
                     ))}
                   </div>
+                  <div style={{marginTop:'1.5rem'}}>
+                    <button className="btn btn-primary" onClick={() => setShowChangePwd(true)}><i className="fas fa-key"></i> Change Password</button>
+                  </div>
                   <div className="stats-row" style={{marginTop:'1.5rem'}}>
                     <div className="stat-box"><div className="stat-ico blue"><i className="fas fa-book"></i></div><div className="stat-info"><div className="value">{history.length}</div><div className="label">Total Borrowed</div></div></div>
                     <div className="stat-box"><div className="stat-ico green"><i className="fas fa-check"></i></div><div className="stat-info"><div className="value">{history.filter(i => i.returnDate).length}</div><div className="label">Returned</div></div></div>
@@ -476,6 +505,18 @@ export default function StudentDashboard() {
           )}
         </div>
       </div>
+
+      <Modal title={<><i className="fas fa-key" style={{color:'#d97706'}}></i> Change Password</>} open={showChangePwd} onClose={() => setShowChangePwd(false)}>
+        <div className="form-group">
+          <label>New Password</label>
+          <input className="inp" type="password" value={newPwd} onChange={e => setNewPwd(e.target.value)} placeholder="Enter new password" />
+        </div>
+        <div className="modal-footer" style={{marginTop:'1.5rem',display:'flex',gap:'10px',justifyContent:'flex-end'}}>
+          <button className="btn btn-outline" onClick={() => setShowChangePwd(false)}>Cancel</button>
+          <button className="btn btn-primary" onClick={handleChangePassword}><i className="fas fa-save"></i> Save</button>
+        </div>
+      </Modal>
+
     </div>
   );
 }

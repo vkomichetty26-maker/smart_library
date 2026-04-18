@@ -586,6 +586,7 @@ export default function AdminDashboard() {
               <input className="inp" type={type} value={editUser[key]||''} onChange={e => setEditUser(u => ({...u, [key]:e.target.value}))} />
             </div>
           ))}
+          <div className="form-group"><label>Reset Password</label><input className="inp" type="password" placeholder="Leave blank to keep current" value={editUser.password||''} onChange={e => setEditUser(u => ({...u, password:e.target.value}))} /></div>
           <div className="form-group"><label>Role</label><select className="inp" value={editUser.role||'student'} onChange={e => setEditUser(u => ({...u, role:e.target.value}))}><option value="student">Student</option><option value="faculty">Faculty</option><option value="librarian">Librarian</option><option value="admin">Admin</option></select></div>
           <div className="form-group"><label>Status</label><select className="inp" value={editUser.active !== false ? 'true':'false'} onChange={e => setEditUser(u => ({...u, active:e.target.value==='true'}))}><option value="true">Active</option><option value="false">Inactive</option></select></div>
         </div>
