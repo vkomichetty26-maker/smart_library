@@ -152,6 +152,20 @@ export default function Login() {
       const res = await authAPI.login({ username: uname, password: pwd });
       const user = res.data;
       if (user.role !== rl) { setError(`This is a "${user.role}" account. Select the correct role.`); setLoading(false); return; }
+      
+      if (user.role === 'student') {
+        const pMatch = !user.programme || user.programme.toLowerCase() === selProg.toLowerCase();
+        const dMatch = !user.department || user.department.toLowerCase() === selBranch.code.toLowerCase();
+        const gMatch = !user.group || user.group.toLowerCase() === selGroup.toLowerCase();
+        const yMatch = !user.year || user.year.toLowerCase() === selYear.toLowerCase();
+        
+        if (!pMatch || !dMatch || !gMatch || !yMatch) {
+          setError('Login failed! Selected Programme/Branch/Year does not match your registered profile.');
+          setLoading(false);
+          return;
+        }
+      }
+
       const sess = { ...user };
       if (rl === 'student') {
         sess.programme = selProg; sess.branch = selBranch.code; sess.branchName = selBranch.name;

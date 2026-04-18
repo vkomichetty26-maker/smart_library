@@ -558,7 +558,7 @@ export default function AdminDashboard() {
       {/* Add User */}
       <Modal title={<><i className="fas fa-user-plus" style={{color:'#2563eb'}}></i> Add New User</>} open={showAddUser} onClose={() => setShowAddUser(false)}>
         <div className="form-grid">
-          {[['Full Name *','name','text'],['Username *','username','text'],['Password *','password','password'],['Email','email','email'],['Phone','phone','tel'],['Department','department','text']].map(([label, key, type]) => (
+          {[['Full Name *','name','text'],['Username *','username','text'],['Password *','password','password'],['Email','email','email'],['Phone','phone','tel']].map(([label, key, type]) => (
             <div key={key} className="form-group">
               <label>{label}</label>
               <input className="inp" type={type} value={newUser[key]||''} onChange={e => setNewUser(u => ({...u, [key]:e.target.value}))} />
@@ -570,6 +570,16 @@ export default function AdminDashboard() {
               <option value="student">Student</option><option value="faculty">Faculty</option><option value="librarian">Librarian</option><option value="admin">Admin</option>
             </select>
           </div>
+          {newUser.role === 'student' ? (
+            <>
+              <div className="form-group"><label>Programme</label><select className="inp" value={newUser.programme||''} onChange={e => setNewUser(u => ({...u, programme:e.target.value}))}><option value="">Select</option><option value="btech">B.Tech</option><option value="bsc">B.Sc</option><option value="bca">BCA</option><option value="mtech">M.Tech</option><option value="msc">M.Sc</option><option value="mca">MCA</option></select></div>
+              <div className="form-group"><label>Branch Code (e.g. CSE)</label><input className="inp" type="text" value={newUser.department||''} onChange={e => setNewUser(u => ({...u, department:e.target.value}))} /></div>
+              <div className="form-group"><label>Group/Section (e.g. A)</label><input className="inp" type="text" value={newUser.group||''} onChange={e => setNewUser(u => ({...u, group:e.target.value}))} /></div>
+              <div className="form-group"><label>Year (e.g. 1st)</label><input className="inp" type="text" value={newUser.year||''} onChange={e => setNewUser(u => ({...u, year:e.target.value}))} /></div>
+            </>
+          ) : (
+            <div className="form-group"><label>Department</label><input className="inp" type="text" value={newUser.department||''} onChange={e => setNewUser(u => ({...u, department:e.target.value}))} /></div>
+          )}
         </div>
         <div className="modal-footer">
           <button className="btn btn-primary" onClick={handleAddUser}><i className="fas fa-save"></i> Create User</button>
@@ -580,7 +590,7 @@ export default function AdminDashboard() {
       {/* Edit User */}
       <Modal title={<><i className="fas fa-user-edit" style={{color:'#d97706'}}></i> Edit User</>} open={showEditUser} onClose={() => setShowEditUser(false)}>
         <div className="form-grid">
-          {[['Full Name','name','text'],['Username','username','text'],['Email','email','email'],['Phone','phone','tel'],['Department','department','text']].map(([label, key, type]) => (
+          {[['Full Name','name','text'],['Username','username','text'],['Email','email','email'],['Phone','phone','tel']].map(([label, key, type]) => (
             <div key={key} className="form-group">
               <label>{label}</label>
               <input className="inp" type={type} value={editUser[key]||''} onChange={e => setEditUser(u => ({...u, [key]:e.target.value}))} />
@@ -589,6 +599,16 @@ export default function AdminDashboard() {
           <div className="form-group"><label>Reset Password</label><input className="inp" type="password" placeholder="Leave blank to keep current" value={editUser.password||''} onChange={e => setEditUser(u => ({...u, password:e.target.value}))} /></div>
           <div className="form-group"><label>Role</label><select className="inp" value={editUser.role||'student'} onChange={e => setEditUser(u => ({...u, role:e.target.value}))}><option value="student">Student</option><option value="faculty">Faculty</option><option value="librarian">Librarian</option><option value="admin">Admin</option></select></div>
           <div className="form-group"><label>Status</label><select className="inp" value={editUser.active !== false ? 'true':'false'} onChange={e => setEditUser(u => ({...u, active:e.target.value==='true'}))}><option value="true">Active</option><option value="false">Inactive</option></select></div>
+          {editUser.role === 'student' ? (
+            <>
+              <div className="form-group"><label>Programme</label><select className="inp" value={editUser.programme||''} onChange={e => setEditUser(u => ({...u, programme:e.target.value}))}><option value="">Select</option><option value="btech">B.Tech</option><option value="bsc">B.Sc</option><option value="bca">BCA</option><option value="mtech">M.Tech</option><option value="msc">M.Sc</option><option value="mca">MCA</option></select></div>
+              <div className="form-group"><label>Branch Code (e.g. CSE)</label><input className="inp" type="text" value={editUser.department||''} onChange={e => setEditUser(u => ({...u, department:e.target.value}))} /></div>
+              <div className="form-group"><label>Group/Section (e.g. A)</label><input className="inp" type="text" value={editUser.group||''} onChange={e => setEditUser(u => ({...u, group:e.target.value}))} /></div>
+              <div className="form-group"><label>Year (e.g. 1st)</label><input className="inp" type="text" value={editUser.year||''} onChange={e => setEditUser(u => ({...u, year:e.target.value}))} /></div>
+            </>
+          ) : (
+            <div className="form-group"><label>Department</label><input className="inp" type="text" value={editUser.department||''} onChange={e => setEditUser(u => ({...u, department:e.target.value}))} /></div>
+          )}
         </div>
         <div className="modal-footer">
           <button className="btn btn-primary" onClick={handleEditUser}><i className="fas fa-save"></i> Save Changes</button>

@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema({
     // Role-specific fields
     employeeId: { type: String },
     rollNo: { type: String },
-    year: { type: String }
+    year: { type: String },
+    programme: { type: String },
+    group: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

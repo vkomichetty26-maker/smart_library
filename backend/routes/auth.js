@@ -19,6 +19,9 @@ router.post('/login', async (req, res) => {
             department: user.department,
             rollNo: user.rollNo,
             employeeId: user.employeeId,
+            year: user.year,
+            programme: user.programme,
+            group: user.group,
         });
     } catch(e) {
         res.status(500).json({ message: 'Server error', error: e.message });
