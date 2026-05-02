@@ -206,7 +206,7 @@ export default function FacultyDashboard() {
               {overdue === 0 && soon > 0 && <div className="info-banner amber"><i className="fas fa-clock"></i><span>{soon} book(s) due within 5 days. Please plan returns.</span></div>}
               <div className="stats-row">
                 <div className="stat-box"><div className="stat-ico blue"><i className="fas fa-book"></i></div><div className="stat-info"><div className="value">{myIssues.length}</div><div className="label">Currently Issued</div></div></div>
-                <div className="stat-box"><div className="stat-ico amber"><i className="fas fa-calendar-alt"></i></div><div className="stat-info"><div className="value">{soon}</div><div className="label">Due in 5 Days</div></div></div>
+                <div className="stat-box"><div className="stat-ico amber"><i className="fas fa-calendar-alt"></i></div><div className="stat-info"><div className="value">{soon}</div><div className="label">Due days</div></div></div>
                 <div className="stat-box"><div className="stat-ico red"><i className="fas fa-exclamation-circle"></i></div><div className="stat-info"><div className="value">{overdue}</div><div className="label">Overdue</div></div></div>
                 <div className="stat-box"><div className="stat-ico green"><i className="fas fa-history"></i></div><div className="stat-info"><div className="value">{history.length}</div><div className="label">Total History</div></div></div>
               </div>
