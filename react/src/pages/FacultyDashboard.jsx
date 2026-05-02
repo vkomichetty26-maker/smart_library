@@ -273,7 +273,7 @@ export default function FacultyDashboard() {
                 <h2><i className="fas fa-paper-plane" style={{color:'#d97706',marginRight:'8px'}}></i>Request Books</h2>
                 <button className="btn btn-primary" onClick={() => setShowSuggest(true)}><i className="fas fa-lightbulb"></i> Suggest New Book to Admin</button>
               </div>
-              <div className="info-banner blue"><i className="fas fa-info-circle"></i><span>Faculty can borrow up to 10 books for up to 30 days. Submit requests and track their status.</span></div>
+              <div className="info-banner blue"><i className="fas fa-info-circle"></i><span>Faculty can borrow up to 4 books for up to 20 days. Submit requests and track their status.</span></div>
               <div className="card">
                 <div className="card-header">
                   <span className="card-title">Available Books</span>
